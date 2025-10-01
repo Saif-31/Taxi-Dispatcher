@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Talk to RideDesk AI taxi dispatcher in real-time using voice">
+  <meta name="theme-color" content="#667eea">
+  <title>RideDesk Voice Demo - AI Taxi Dispatcher</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1>🚕 RideDesk Voice Demo</h1>
+      <p>Talk to our AI dispatcher in real-time</p>
+    </header>
+
+    <!-- Status Indicator -->
+    <div id="status" class="status status-disconnected">
+      <span class="status-dot"></span>
+      <span id="status-text">Ready to connect</span>
+    </div>
+
+    <!-- Call Controls -->
+    <div class="controls">
+      <button id="start-btn" class="btn btn-start" aria-label="Start voice call">
+        🎤 Start Call
+      </button>
+      <button id="end-btn" class="btn btn-end" disabled aria-label="End voice call">
+        📞 End Call
+      </button>
+    </div>
+
+    <!-- Audio Level Indicator -->
+    <div id="audio-level-container" class="audio-level-container" style="display: none;">
+      <div class="audio-level-label">Your Voice Level:</div>
+      <div class="audio-level-bar">
+        <div id="audio-level" class="audio-level-fill"></div>
+      </div>
+    </div>
+
+    <!-- Transcript Display -->
+    <div class="transcript-container">
+      <h3>📝 Conversation</h3>
+      <div id="transcript" class="transcript">
+        <p class="transcript-empty">Conversation will appear here...</p>
+      </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="instructions">
+      <h4>📱 How to use:</h4>
+      <ol>
+        <li>Click <strong>"Start Call"</strong> and allow microphone access</li>
+        <li>Speak naturally - the AI will respond in real-time</li>
+        <li>Tell the AI your <strong>pickup location</strong> and <strong>destination</strong></li>
+        <li>The AI will confirm details and provide <strong>fare + ETA</strong></li>
+        <li>Click <strong>"End Call"</strong> when finished</li>
+      </ol>
+      <p class="instructions-note">
+        💡 <strong>Tip:</strong> Speak clearly and wait for the AI to finish before responding.
+      </p>
+    </div>
+
+    <!-- Error Display -->
+    <div id="error" class="error" style="display: none;"></div>
+
+    <!-- Warning Display -->
+    <div id="warning" class="warning" style="display: none;"></div>
+
+    <!-- Session Info -->
+    <div id="session-info" class="session-info" style="display: none;">
+      <small>Session ID: <span id="session-id"></span></small>
+      <small>Expires: <span id="expires-at"></span></small>
+    </div>
+  </div>
+
+  <!-- Audio element for AI voice -->
+  <audio id="audio-playback" autoplay></audio>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
