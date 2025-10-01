@@ -1,0 +1,24 @@
+{
+  "name": "ridedesk-voice-demo",
+  "version": "1.0.0",
+  "description": "Production-ready OpenAI Realtime Voice Call Demo",
+  "main": "index.js",
+  "scripts": {
+    "build": "echo 'No build needed for static files'",
+    "deploy": "vercel --prod",
+    "test": "node test-session.js"
+  },
+  "keywords": [
+    "openai",
+    "realtime",
+    "voice",
+    "webrtc",
+    "ai",
+    "taxi"
+  ],
+  "author": "Umer & Saffi",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^17.2.3"
+  }
+}
