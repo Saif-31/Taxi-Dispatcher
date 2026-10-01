@@ -429,3 +429,18 @@ header p {
     transition-duration: 0.01ms !important;
   }
 }
+.access-control {
+  display: grid;
+  gap: 8px;
+  margin: 20px 0;
+  text-align: left;
+}
+.access-control input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #777;
+  border-radius: 8px;
+  font: inherit;
+}
+.access-control small { line-height: 1.4; }

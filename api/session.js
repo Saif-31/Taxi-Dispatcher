@@ -1,69 +1,14 @@
-// Production-ready serverless function for creating OpenAI ephemeral sessions
-// Enhanced version with realistic multi-scenario handling
-// Improve the system control instructions for a taxi dispatcher AI - 21-oct-2025
+import { authorizeSession } from '../lib/session-security.js';
+import { getSessionLimiter } from '../lib/session-limiter.js';
 
-const rateLimitMap = new Map();
-const MAX_SESSIONS_PER_IP = 10;
-const RATE_LIMIT_WINDOW = 3600000; // 1 hour
-
-export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  // Rate limiting by IP
-  const clientIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
-  const now = Date.now();
-  
-  if (rateLimitMap.has(clientIp)) {
-    const { count, timestamp } = rateLimitMap.get(clientIp);
-    
-    if (now - timestamp < RATE_LIMIT_WINDOW) {
-      if (count >= MAX_SESSIONS_PER_IP) {
-        return res.status(429).json({ 
-          error: 'Too many requests. Please try again later.' 
-        });
-      }
-      rateLimitMap.set(clientIp, { count: count + 1, timestamp });
-    } else {
-      rateLimitMap.set(clientIp, { count: 1, timestamp: now });
-    }
-  } else {
-    rateLimitMap.set(clientIp, { count: 1, timestamp: now });
-  }
-
-  // Clean up old rate limit entries
-  for (const [ip, data] of rateLimitMap.entries()) {
-    if (now - data.timestamp > RATE_LIMIT_WINDOW) {
-      rateLimitMap.delete(ip);
-    }
-  }
-
-  const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-
-  // Validate API key
-  if (!OPENAI_API_KEY || !OPENAI_API_KEY.startsWith('sk-')) {
-    console.error('Invalid or missing OPENAI_API_KEY');
-    return res.status(500).json({ 
-      error: 'Server configuration error',
-      details: 'API key not properly configured'
-    });
-  }
-
+export function createSessionHandler({ env = process.env, fetchImpl = fetch,
+  getLimiter = getSessionLimiter } = {}) {
+  return async function handler(req, res) {
+  if (!await authorizeSession(req, res, env, getLimiter)) return;
+  const OPENAI_API_KEY = env.OPENAI_API_KEY;
   try {
     // Create ephemeral session with OpenAI
-    const response = await fetch('https://api.openai.com/v1/realtime/sessions', {
+    const response = await fetchImpl('https://api.openai.com/v1/realtime/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -285,8 +230,7 @@ Zvuči kao pravi dispečer Mega Taksija – brzo, jasno i prijatno, da korisnik 
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
+      console.error('OpenAI API error:', response.status);
       
       return res.status(response.status).json({
         error: 'Failed to create session with OpenAI',
@@ -305,12 +249,15 @@ Zvuči kao pravi dispečer Mega Taksija – brzo, jasno i prijatno, da korisnik 
     });
 
   } catch (error) {
-    console.error('Session creation error:', error);
+    console.error('Session creation failed');
     
     return res.status(500).json({
       error: 'Internal server error',
-      message: process.env.NODE_ENV === 'development' ? error.message : 'Unable to create session',
+      message: 'Unable to create session',
       details: 'Please try again or contact support if the issue persists'
     });
   }
+  };
 }
+
+export default createSessionHandler();

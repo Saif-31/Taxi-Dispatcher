@@ -89,9 +89,9 @@ function addTranscript(speaker, message, isSystem = false) {
   item.className = `transcript-item transcript-${isSystem ? 'system' : speaker}`;
   
   if (isSystem) {
-    item.innerHTML = `${message}`;
+    item.textContent = `${message}`;
   } else {
-    item.innerHTML = `
+    item.textContent = `
       ${speaker === 'user' ? '👤 You' : '🤖 AI Dispatcher'}
       ${message}
     `;
@@ -196,9 +196,15 @@ async function startCall() {
     
     console.log('Using API URL:', apiUrl);
     
+    // Operator-supplied credential, never bundled or persisted in browser storage.
+    const accessToken = document.getElementById('session-access-token').value.trim();
     const response = await fetch(apiUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      },
+      cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -389,11 +395,11 @@ function handleServerMessage(message) {
   switch (message.type) {
     // Session events
     case 'session.created':
-      console.log('Session created:', message.session);
+      console.log('Session created');
       break;
 
     case 'session.updated':
-      console.log('Session updated:', message.session);
+      console.log('Session updated');
       break;
 
     // Input audio events (user speaking)
