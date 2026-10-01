@@ -6,7 +6,7 @@
   "scripts": {
     "build": "echo 'No build needed for static files'",
     "deploy": "vercel --prod",
-    "test": "node test-session.js"
+    "test": "node --test"
   },
   "keywords": [
     "openai",
@@ -20,5 +20,6 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^17.2.3"
-  }
+  },
+  "type": "module"
 }

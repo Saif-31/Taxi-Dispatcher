@@ -23,6 +23,12 @@
     </div>
 
     <!-- Call Controls -->
+    <div class="access-control">
+      <label for="session-access-token">Dispatcher access token</label>
+      <input id="session-access-token" type="password" autocomplete="off"
+        placeholder="Required outside local development" aria-describedby="token-help">
+      <small id="token-help">Use the access token provided by your administrator, never an OpenAI API key.</small>
+    </div>
     <div class="controls">
       <button id="start-btn" class="btn btn-start" aria-label="Start voice call">
         🎤 Start Call
